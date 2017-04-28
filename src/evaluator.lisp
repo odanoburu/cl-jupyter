@@ -81,14 +81,14 @@ The history of evaluations is also saved by the evaluator.
                (class-name (class-of err)) err))))
 
 (defun evaluate-code (evaluator code)
-  ;;(format t "[Evaluator] Code to evaluate: ~W~%" code)
+  ;;(format t "[Evaluator] Code to evaluate: ~W (type ~A)~%" code (type-of code))
   (let ((execution-count (+ (length (evaluator-history-in evaluator)) 1)))
     (let ((code-to-eval (handler-case
                          (read-from-string (format nil "(progn ~A~%)" code))
                          (END-OF-FILE (err) (list :read-error-eof (format nil "~A" (class-name (class-of err)))))
                          #+sbcl (SB-INT:SIMPLE-READER-ERROR (err)
                                                             (list :read-error (format nil "~A (condition of type ~A)" err (class-name (class-of err))))))))
-      ;;(format t "code-to-eval = ~A~%" code-to-eval)
+      ;;(format t "===>  code-to-eval = ~A~%" code-to-eval)
       (cond
        ((and (consp code-to-eval)
              (eq (car code-to-eval) :read-error-eof))
@@ -134,4 +134,5 @@ The history of evaluations is also saved by the evaluator.
                                    (evaluator-history-in evaluator)))
              (vector-push-extend results (evaluator-history-out evaluator))
              (values execution-count results stdout-str stderr-str))))))))
+
 
